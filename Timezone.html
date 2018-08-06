@@ -1,0 +1,125 @@
+<div style="margin:auto;width:50%;" >
+  <canvas id="tz" width="780" height="1000"></canvas>
+</div>
+
+<script type="text/javascript">
+  function stopAndBegin(level) {
+    if (intervalJeu !== undefined) {
+      clearInterval(intervalJeu);
+    }
+    return intervalJeu = setInterval(game, 200 - level * 13, level);
+  }
+
+  function isEmpty(obj) {
+    for (var key in obj) {
+      if (obj.hasOwnProperty(key))
+        return false;
+    }
+    return true;
+  }
+
+  window.onload = function() {
+    canv = document.getElementById("tz");
+    ctx = canv.getContext("2d");
+    document.addEventListener("keydown", spacePush);
+    stopAndBegin(level);
+  }
+
+  var level = 1
+  var caseSize = 100;
+  var intervalCase = 10;
+  var nbCurrentCase = 3;
+  var nbCaseMax = 7;
+  var caseDebut = 1;
+  var way = 1;
+  var base = [1, 2, 3, 4, 5, 6, 7];
+  var history = {};
+  var intervalJeu;
+
+
+  function game(level) {
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, canv.width, canv.height);
+
+    switch (way) {
+      case 1:
+        if (caseDebut + nbCurrentCase - 1 == nbCaseMax) {
+          caseDebut--;
+          way = 0;
+        } else {
+          caseDebut++;
+        }
+        break;
+      case 0:
+        if (caseDebut + nbCurrentCase == 1 + nbCurrentCase) {
+          caseDebut++;
+          way = 1;
+        } else {
+          caseDebut--;
+        }
+        break;
+      default:
+        console.log("wtf");
+    }
+    ctx.fillStyle = "lime";
+    if (!isEmpty(history)) {
+      Object.keys(history).map(function(objectKey, index) {
+        for (var i = history[objectKey][0]; i <= history[objectKey][history[objectKey].length - 1]; i++) {
+          ctx.fillRect(canv.width - ((caseSize + intervalCase) * i), canv.height - caseSize * objectKey - intervalCase * objectKey, caseSize, caseSize);
+        }
+      });
+    }
+    for (var i = caseDebut; i <= caseDebut + nbCurrentCase - 1; i++) {
+      ctx.fillRect(canv.width - ((caseSize + intervalCase) * i), canv.height - caseSize * level - intervalCase * level, caseSize, caseSize);
+    }
+  }
+
+  function spacePush(event) {
+    switch (event.keyCode) {
+      case 32:
+        var currentStop = [];
+        for (var i = caseDebut; i <= caseDebut + nbCurrentCase - 1; i++) {
+          currentStop.push(i);
+        }
+        var levelNm1 = innerJoin(base, currentStop);
+        if (levelNm1.length == 0) {
+          base = [1, 2, 3, 4, 5, 6, 7];
+          level = 1;
+          nbCurrentCase = 3;
+          caseDebut = 1;
+          Object.keys(history).forEach(k => delete history[k])
+          stopAndBegin(level);
+        } else if (level == 10) {
+          base = [1, 2, 3, 4, 5, 6, 7];
+          level = 1;
+          nbCurrentCase = 3;
+          caseDebut = 1;
+          Object.keys(history).forEach(k => delete history[k])
+          stopAndBegin(level);
+        } else {
+          base = levelNm1;
+          history[level] = (levelNm1);
+          level++;
+          if (level == 4) {
+            nbCurrentCase = 2;
+          }
+          if (level == 7) {
+            nbCurrentCase = 1;
+          }
+          stopAndBegin(level);
+        }
+
+
+        break;
+      default:
+    }
+
+    function innerJoin(arr, arr2) {
+      array = arr2.concat(arr);
+      result = array.filter((a, i, aa) => aa.indexOf(a) === i && aa.lastIndexOf(a) !== i);
+      return result;
+    }
+
+
+  }
+</script>
