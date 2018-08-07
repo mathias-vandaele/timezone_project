@@ -3,11 +3,12 @@
 </div>
 
 <script type="text/javascript">
+
   function stopAndBegin(level) {
     if (intervalJeu !== undefined) {
       clearInterval(intervalJeu);
     }
-    return intervalJeu = setInterval(game, 200 - level * 13, level);
+    return intervalJeu = setInterval(game, 130 - level * 10, level);
   }
 
   function isEmpty(obj) {
@@ -99,11 +100,12 @@
         } else {
           base = levelNm1;
           history[level] = (levelNm1);
+          nbCurrentCase = levelNm1.length;
           level++;
-          if (level == 4) {
+          if (level == 4 && 2 < levelNm1.length) {
             nbCurrentCase = 2;
           }
-          if (level == 7) {
+          if (level == 7 && 1 < levelNm1.length) {
             nbCurrentCase = 1;
           }
           stopAndBegin(level);
